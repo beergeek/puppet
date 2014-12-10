@@ -215,7 +215,11 @@ module Puppet::Network::HTTP
       if Puppet[:http_proxy_host] == "none"
         args << nil << nil
       else
-        args << Puppet[:http_proxy_host] << Puppet[:http_proxy_port]
+        if Puppet[:http_proxy_user] == ""
+          args << Puppet[:http_proxy_host] << Puppet[:http_proxy_port]
+        else
+          args << Puppet[:http_proxy_host] << Puppet[:http_proxy_port] << Puppet[:http_proxy_user] << Puppet[:http_proxy_password]
+        end
       end
 
       @connection = create_connection(*args)
