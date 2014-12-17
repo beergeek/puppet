@@ -70,6 +70,8 @@ Puppet::Type.type(:package).provide :pkgdmg, :parent => Puppet::Provider::Packag
   def self.installpkgdmg(source, name)
     http_proxy_host = Puppet::Util::HttpProxy.http_proxy_host
     http_proxy_port = Puppet::Util::HttpProxy.http_proxy_port
+    http_proxy_user = Puppet::Util::HttpProxy.http_proxy_user
+    http_proxy_password = Puppet::Util::HttpProxy.http_proxy_password
 
     unless source =~ /\.dmg$/i || source =~ /\.pkg$/i
       raise Puppet::Error.new("Mac OS X PKG DMG's must specify a source string ending in .dmg or flat .pkg file")
@@ -86,6 +88,11 @@ Puppet::Type.type(:package).provide :pkgdmg, :parent => Puppet::Provider::Packag
           args << "--proxy" << "#{http_proxy_host}:#{http_proxy_port}"
         elsif http_proxy_host and not http_proxy_port
           args << "--proxy" << http_proxy_host
+        end
+        if http_proxy_user and http_proxy_password
+          args << "--proxy-user" << "#{http_proxy_user}:#{http_proxy_password}"
+        elsif http_proxy_user and not http_proxy_password
+          args << "--proxy-user" << http_proxy_user
         end
       begin
         curl *args
